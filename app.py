@@ -4,6 +4,7 @@ import numpy as np
 #from decouple import config
 import pickle
 import sklearn
+import pandas as pd
 
 # DB = SQLAlchemy()
 
@@ -32,7 +33,7 @@ def predict():
                 year = request.form.get('year')
                 a = request.form.get('a')
                 b = request.form.get('b')
-                c = request.form.get('year')
+                # c = request.form.get('year')
                 d = request.form.get('year')
                 e = request.form.get('year')
                 duration = request.form.get('duration')
@@ -43,26 +44,30 @@ def predict():
                 # main_category = request.form.get('main_category')
                 
 
-                prediction = preprocessDataAndPredict(goal, duration, currency, country,time_since_last_project, year, a, b, c, d, e )
+                prediction = preprocessDataAndPredict(goal, duration, currency, country)
                                                        
 
                 return render_template('predict.html', prediction = prediction)
 
-def preprocessDataAndPredict(goal, duration, currency, country,time_since_last_project, year, a, b, c, d, e):
+def preprocessDataAndPredict(goal, duration, currency, country):
 
-        test_data = (goal, duration, currency, country, time_since_last_project, year, a, b, c, d, e)
+        test_data = (goal, duration, currency, country)
 
         print(test_data)
 
         test_data = np.array(test_data)
+        dftest = pd.DataFrame(test_data).T
+        dftest.columns = ['country', 'currency', 'duration', 'goal']
+        print(dftest)
+        print(dftest.shape)
 
-        test_data = test_data.reshape(1, -1)
-        print(test_data)
+        # test_data = test_data.reshape(1, -1)
+        # print(test_data)
 
         #file = open("model.pkl", "wb")
         model = pickle.load(open('model_k.pkl', 'rb'))
 
-        prediction = model.predict(test_data)
+        prediction = model.predict(dftest)
 
         print(prediction)
         
